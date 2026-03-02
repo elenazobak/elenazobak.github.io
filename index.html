@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Elena Zobak — Creative Technologist</title>
+<meta name="description" content="Elena Zobak — Creative Technologist. 3 apps on the App Store. 15 years across design, QA, video, iOS, and operations.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Nunito:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: #0e0e13;
+    color: #c8c3bb;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    padding: 60px 24px 80px;
+    -webkit-font-smoothing: antialiased;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* Warm animated gradient background */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background:
+      radial-gradient(ellipse 600px 400px at 20% 20%, rgba(232, 145, 122, 0.07) 0%, transparent 70%),
+      radial-gradient(ellipse 500px 500px at 80% 60%, rgba(184, 169, 201, 0.06) 0%, transparent 70%),
+      radial-gradient(ellipse 400px 300px at 50% 90%, rgba(141, 184, 158, 0.05) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+    animation: drift 20s ease-in-out infinite alternate;
+  }
+
+  @keyframes drift {
+    0% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(-20px, 15px) scale(1.02); }
+    100% { transform: translate(10px, -10px) scale(1); }
+  }
+
+  .container {
+    max-width: 580px;
+    width: 100%;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Fade-up entrance */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .fade-in {
+    opacity: 0;
+    animation: fadeUp 0.7s ease-out forwards;
+  }
+
+  .delay-1 { animation-delay: 0.1s; }
+  .delay-2 { animation-delay: 0.2s; }
+  .delay-3 { animation-delay: 0.35s; }
+  .delay-4 { animation-delay: 0.5s; }
+  .delay-5 { animation-delay: 0.65s; }
+  .delay-6 { animation-delay: 0.8s; }
+  .delay-7 { animation-delay: 0.95s; }
+  .delay-8 { animation-delay: 1.1s; }
+
+  /* === AVATAR === */
+  .avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #e8917a, #b8a9c9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 22px;
+    font-weight: 700;
+    color: #0e0e13;
+    margin-bottom: 28px;
+    letter-spacing: 1px;
+    box-shadow: 0 0 40px rgba(232, 145, 122, 0.15), 0 0 80px rgba(184, 169, 201, 0.08);
+  }
+
+  /* === HEADER === */
+  h1 {
+    font-size: 30px;
+    font-weight: 600;
+    color: #f0ece6;
+    margin-bottom: 6px;
+    letter-spacing: -0.3px;
+  }
+
+  .title {
+    font-size: 15px;
+    color: #e8917a;
+    font-weight: 400;
+    margin-bottom: 8px;
+    letter-spacing: 0.3px;
+  }
+
+  .subtitle {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: #4a4545;
+    letter-spacing: 0.5px;
+    margin-bottom: 28px;
+  }
+
+  /* === BIO === */
+  .bio {
+    font-size: 14.5px;
+    line-height: 1.85;
+    color: #8a857e;
+    margin-bottom: 32px;
+    font-weight: 300;
+  }
+
+  .bio strong {
+    color: #b8b2a9;
+    font-weight: 400;
+  }
+
+  /* === TAGS === */
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 44px;
+  }
+
+  .tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    padding: 5px 13px;
+    border-radius: 20px;
+    background: transparent;
+    letter-spacing: 0.3px;
+    transition: all 0.25s ease;
+  }
+
+  .tag:hover {
+    transform: translateY(-1px);
+  }
+
+  .tag.coral { color: #e8917a; border: 1px solid #3a2225; }
+  .tag.coral:hover { background: rgba(232, 145, 122, 0.06); }
+  .tag.lilac { color: #b8a9c9; border: 1px solid #2a2535; }
+  .tag.lilac:hover { background: rgba(184, 169, 201, 0.06); }
+  .tag.sage { color: #8db89e; border: 1px solid #1e2e24; }
+  .tag.sage:hover { background: rgba(141, 184, 158, 0.06); }
+  .tag.sky { color: #7eb8c9; border: 1px solid #1c2a30; }
+  .tag.sky:hover { background: rgba(126, 184, 201, 0.06); }
+
+  /* === DIVIDER === */
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #1e1d22 30%, #1e1d22 70%, transparent);
+    margin-bottom: 32px;
+  }
+
+  /* === SECTION LABEL === */
+  .label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #4a4545;
+    margin-bottom: 18px;
+  }
+
+  /* === APP CARDS === */
+  .app-list {
+    margin-bottom: 44px;
+  }
+
+  .app {
+    padding: 16px 0;
+    border-bottom: 1px solid #1a191e;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    transition: all 0.2s ease;
+  }
+
+  .app:last-child { border-bottom: none; }
+
+  .app:hover {
+    padding-left: 4px;
+  }
+
+  .app-name a {
+    font-size: 14.5px;
+    font-weight: 500;
+    color: #e0dbd4;
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s ease;
+  }
+
+  .app-name a:hover {
+    border-bottom-color: #3a3632;
+  }
+
+  .app-desc {
+    font-size: 12.5px;
+    color: #5e5a54;
+    margin-top: 4px;
+    font-weight: 300;
+    line-height: 1.5;
+  }
+
+  .app-tech {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: #3a3835;
+    margin-top: 5px;
+    letter-spacing: 0.3px;
+  }
+
+  .badge {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 10px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .badge.live {
+    color: #8db89e;
+    background: rgba(141, 184, 158, 0.08);
+    border: 1px solid rgba(141, 184, 158, 0.15);
+  }
+
+  /* === EXPERIENCE === */
+  .exp-list {
+    margin-bottom: 44px;
+  }
+
+  .exp {
+    padding: 10px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+  }
+
+  .exp-role {
+    font-size: 13.5px;
+    color: #a09a92;
+    font-weight: 300;
+  }
+
+  .exp-role strong {
+    color: #d1cdc7;
+    font-weight: 400;
+  }
+
+  .exp-years {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: #3a3835;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  /* === VIDEO === */
+  .video-item {
+    padding: 16px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .video-item a {
+    font-size: 14.5px;
+    font-weight: 500;
+    color: #e0dbd4;
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s ease;
+  }
+
+  .video-item a:hover {
+    border-bottom-color: #3a3632;
+  }
+
+  .video-desc {
+    font-size: 12.5px;
+    color: #5e5a54;
+    margin-top: 3px;
+    font-weight: 300;
+  }
+
+  .badge.views {
+    color: #e8917a;
+    background: rgba(232, 145, 122, 0.08);
+    border: 1px solid rgba(232, 145, 122, 0.12);
+  }
+
+  /* === CLIENTS === */
+  .clients {
+    font-size: 12.5px;
+    color: #4a4640;
+    margin-bottom: 44px;
+    font-weight: 300;
+    line-height: 2;
+    letter-spacing: 0.3px;
+  }
+
+  .clients span { color: #2a2825; margin: 0 4px; }
+
+  /* === EDUCATION === */
+  .edu {
+    font-size: 12.5px;
+    color: #4a4640;
+    margin-bottom: 44px;
+    font-weight: 300;
+    line-height: 2.2;
+  }
+
+  /* === LINKS === */
+  .links {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 56px;
+  }
+
+  .links a {
+    font-size: 13.5px;
+    color: #e8917a;
+    text-decoration: none;
+    font-weight: 400;
+    letter-spacing: 0.2px;
+    padding-bottom: 1px;
+    border-bottom: 1px solid transparent;
+    transition: all 0.2s ease;
+  }
+
+  .links a:hover {
+    color: #f2a893;
+    border-bottom-color: rgba(232, 145, 122, 0.3);
+  }
+
+  /* === FOOTER === */
+  .footer {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: #252328;
+    letter-spacing: 1px;
+  }
+
+  /* === RESPONSIVE === */
+  @media (max-width: 500px) {
+    body { padding: 40px 20px 60px; }
+    h1 { font-size: 26px; }
+    .avatar { width: 68px; height: 68px; font-size: 19px; }
+    .app { flex-direction: column; align-items: flex-start; gap: 8px; }
+    .video-item { flex-direction: column; align-items: flex-start; gap: 8px; }
+    .exp { flex-direction: column; gap: 2px; }
+    .tags { gap: 6px; }
+    .tag { font-size: 10px; padding: 4px 11px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <div class="avatar fade-in delay-1">EZ</div>
+
+  <h1 class="fade-in delay-1">Elena Zobak</h1>
+  <p class="title fade-in delay-2">Creative Technologist</p>
+  <p class="subtitle fade-in delay-2">English · Hebrew · Russian &nbsp;/&nbsp; US-based</p>
+
+  <p class="bio fade-in delay-3">
+    15 years across <strong>design</strong>, <strong>QA</strong>, <strong>video production</strong>, <strong>iOS development</strong>, and <strong>technical operations</strong>. I've led a design team at Israel's largest newspaper, run platform operations for 500+ users, and shipped three apps to the App Store on my own. I like understanding how things work — and making them work better for the people using them.
+  </p>
+
+  <div class="tags fade-in delay-3">
+    <span class="tag coral">Swift / SwiftUI</span>
+    <span class="tag lilac">Product Strategy</span>
+    <span class="tag sage">Technical Ops</span>
+    <span class="tag sky">Video & Motion</span>
+    <span class="tag coral">UX Design</span>
+    <span class="tag lilac">QA</span>
+    <span class="tag sage">Firebase</span>
+  </div>
+
+  <div class="divider fade-in delay-4"></div>
+
+  <p class="label fade-in delay-4">Apps I've shipped</p>
+  <div class="app-list fade-in delay-4">
+    <div class="app">
+      <div>
+        <div class="app-name"><a href="https://apps.apple.com/app/hiola-chat-in-any-language/id6740637943" target="_blank">Hiola</a></div>
+        <p class="app-desc">Chat app with real-time AI translation. Everyone writes in their own language and reads in theirs.</p>
+        <p class="app-tech">Swift · SwiftUI · Firebase · Claude AI · FCM</p>
+      </div>
+      <span class="badge live">App Store</span>
+    </div>
+    <div class="app">
+      <div>
+        <div class="app-name"><a href="https://apps.apple.com/il/app/yalla-ivrit/id6759205917" target="_blank">Yalla Ivrit</a></div>
+        <p class="app-desc">Hebrew learning for immigrant kids. 30 lessons, 13 activity types, speech recognition.</p>
+        <p class="app-tech">Swift · SwiftUI · StoreKit 2 · SFSpeech</p>
+      </div>
+      <span class="badge live">App Store</span>
+    </div>
+    <div class="app">
+      <div>
+        <div class="app-name"><a href="https://apps.apple.com/us/app/numwix/id6448761871" target="_blank">NumWix</a></div>
+        <p class="app-desc">Logic game. Crack the number code.</p>
+        <p class="app-tech">Swift · UIKit</p>
+      </div>
+      <span class="badge live">App Store</span>
+    </div>
+  </div>
+
+  <div class="divider fade-in delay-5"></div>
+
+  <p class="label fade-in delay-5">Background</p>
+  <div class="exp-list fade-in delay-5">
+    <div class="exp">
+      <p class="exp-role"><strong>Tech Ops Manager</strong> — South Jersey Innovation Center</p>
+      <span class="exp-years">2023—now</span>
+    </div>
+    <div class="exp">
+      <p class="exp-role"><strong>iOS Developer</strong> — Hiola & Yalla Ivrit</p>
+      <span class="exp-years">2024—now</span>
+    </div>
+    <div class="exp">
+      <p class="exp-role"><strong>iOS Engineer</strong> — STRIV3</p>
+      <span class="exp-years">2023</span>
+    </div>
+    <div class="exp">
+      <p class="exp-role"><strong>Producer & Project Manager</strong> — Freelance</p>
+      <span class="exp-years">2016—23</span>
+    </div>
+    <div class="exp">
+      <p class="exp-role"><strong>QA Engineer</strong> — Hiro Media</p>
+      <span class="exp-years">2013—15</span>
+    </div>
+    <div class="exp">
+      <p class="exp-role"><strong>Head of Design</strong> — Haaretz / TheMarker</p>
+      <span class="exp-years">2008—13</span>
+    </div>
+  </div>
+
+  <div class="divider fade-in delay-6"></div>
+
+  <p class="label fade-in delay-6">Video work</p>
+  <div class="app-list fade-in delay-6">
+    <div class="video-item">
+      <div>
+        <a href="https://www.youtube.com/watch?v=uqxzi_ghjgc" target="_blank">The Right Way</a>
+        <p class="video-desc">3D animated short film.</p>
+      </div>
+      <span class="badge views">14M+ views</span>
+    </div>
+  </div>
+  <p class="clients" style="margin-top:0;">
+    Clients: BabySense <span>·</span> Maccabi USA <span>·</span> Israeli American Council <span>·</span> PicassoTiles <span>·</span> Net Zero Co.
+  </p>
+
+  <div class="divider fade-in delay-7"></div>
+
+  <p class="label fade-in delay-7">Education</p>
+  <p class="edu fade-in delay-7">
+    Software Engineering — Fullstack Academy<br>
+    Digital Product Management — University of Virginia<br>
+    3D Animation & VFX — New York Film Academy<br>
+    Computer Science — Open University of Israel
+  </p>
+
+  <div class="divider fade-in delay-8"></div>
+
+  <div class="links fade-in delay-8">
+    <a href="https://www.linkedin.com/in/elenazobak/" target="_blank">LinkedIn</a>
+    <a href="https://github.com/elenazobak" target="_blank">GitHub</a>
+    <a href="https://www.youtube.com/watch?v=uqxzi_ghjgc" target="_blank">Video Work</a>
+    <a href="mailto:elenazobak@gmail.com">Email</a>
+  </div>
+
+  <p class="footer fade-in delay-8">&copy; 2026 Elena Zobak</p>
+
+</div>
+
+</body>
+</html>
