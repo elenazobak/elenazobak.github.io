@@ -311,30 +311,88 @@
     flex-shrink: 0;
   }
 
-  /* === VIDEO === */
-  .video-item {
-    padding: 16px 0;
+  /* === VIDEO CARD === */
+  .video-card {
+    display: block;
+    text-decoration: none;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #1e1d22;
+    background: #131318;
+    margin-bottom: 16px;
+    transition: all 0.3s ease;
+  }
+
+  .video-card:hover {
+    border-color: #3a3538;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+  }
+
+  .video-thumb {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: #0a0a0e;
+    overflow: hidden;
+  }
+
+  .video-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.85;
+    transition: opacity 0.3s ease;
+  }
+
+  .video-card:hover .video-thumb img {
+    opacity: 1;
+  }
+
+  .play-btn {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 56px;
+    height: 56px;
+    background: rgba(232, 145, 122, 0.9);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 20px rgba(232, 145, 122, 0.3);
+  }
+
+  .video-card:hover .play-btn {
+    background: rgba(232, 145, 122, 1);
+    transform: translate(-50%, -50%) scale(1.08);
+    box-shadow: 0 6px 28px rgba(232, 145, 122, 0.4);
+  }
+
+  .play-btn svg {
+    width: 22px;
+    height: 22px;
+    fill: #0e0e13;
+    margin-left: 2px;
+  }
+
+  .video-info {
+    padding: 14px 16px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 16px;
   }
 
-  .video-item a {
+  .video-title {
     font-size: 15px;
     font-weight: 600;
     color: #eeebe5;
-    text-decoration: none;
-    border-bottom: 1px solid transparent;
-    transition: border-color 0.2s ease;
-  }
-
-  .video-item a:hover {
-    border-bottom-color: #3a3632;
   }
 
   .video-desc {
-    font-size: 13px;
+    font-size: 12.5px;
     color: #8a857e;
     margin-top: 3px;
     font-weight: 300;
@@ -343,7 +401,15 @@
   .badge.views {
     color: #e8917a;
     background: rgba(232, 145, 122, 0.08);
-    border: 1px solid rgba(232, 145, 122, 0.12);
+    border: 1px solid rgba(232, 145, 122, 0.15);
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 10px;
+    white-space: nowrap;
+    flex-shrink: 0;
   }
 
   /* === CLIENTS === */
@@ -495,15 +561,21 @@
   <div class="divider fade-in delay-6"></div>
 
   <p class="label fade-in delay-6">Video work</p>
-  <div class="app-list fade-in delay-6">
-    <div class="video-item">
+  <a href="https://www.youtube.com/watch?v=uqxzi_ghjgc" target="_blank" class="video-card fade-in delay-6">
+    <div class="video-thumb">
+      <img src="https://img.youtube.com/vi/uqxzi_ghjgc/maxresdefault.jpg" alt="The Right Way — 3D animated short film">
+      <div class="play-btn">
+        <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+      </div>
+    </div>
+    <div class="video-info">
       <div>
-        <a href="https://www.youtube.com/watch?v=uqxzi_ghjgc" target="_blank">The Right Way</a>
-        <p class="video-desc">3D animated short film.</p>
+        <div class="video-title">The Right Way</div>
+        <p class="video-desc">3D animated short film</p>
       </div>
       <span class="badge views">14M+ views</span>
     </div>
-  </div>
+  </a>
   <p class="clients" style="margin-top:0;">
     Clients: BabySense <span>·</span> Maccabi USA <span>·</span> Israeli American Council <span>·</span> PicassoTiles <span>·</span> Net Zero Co.
   </p>
