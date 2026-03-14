@@ -204,7 +204,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
       <a class="modal-maps" id="m-maps" href="#" target="_blank">Open in Google Maps</a>
     </div>
     <div class="modal-foot">
-      <button class="btn-del" id="m-del" onclick="deleteCard()">Delete</button>
+      <button class="btn-del" id="m-del" onclick="deleteFromModal()">Delete</button>
       <button class="btn-save" onclick="saveModal()">Save</button>
     </div>
   </div>
@@ -461,7 +461,7 @@ function cardHTML(a, inPool){
   const c = CATS[a.cat] || {emoji:'📌',color:'#888'};
   return `<div class="card" data-id="${a.id}" style="border-left-color:${c.color}">
     <div class="card-click" onclick="openCard(${a.id})"></div>
-    <button class="card-x" onclick="${inPool ? `deleteCard(${a.id})` : `removeCard(${a.id})`}">&times;</button>
+    <button class="card-x" onclick="handleRemove(${a.id})">&times;</button>
     <div class="card-top">
       <span class="card-emoji">${c.emoji}</span>
       <span class="card-title">${esc(a.title)}</span>
@@ -521,15 +521,16 @@ function syncFromDOM(){
 }
 
 // ===== CARD ACTIONS =====
-function removeCard(id){
+function handleRemove(id){
   const a = state.activities.find(x => x.id === id);
-  if(a){a.day = null; state.poolFilter = 'all'; render(); updateMap(); toast('Moved to pool');}
-}
-
-function deleteCard(id){
-  if(!confirm('Delete this activity permanently?')) return;
-  state.activities = state.activities.filter(x => x.id !== id);
-  render(); updateMap(); toast('Deleted');
+  if(!a) return;
+  if(a.day !== null){
+    a.day = null; state.poolFilter = 'all'; render(); updateMap(); toast('Moved to pool');
+  } else {
+    if(!confirm('Delete this activity permanently?')) return;
+    state.activities = state.activities.filter(x => x.id !== id);
+    render(); updateMap(); toast('Deleted');
+  }
 }
 
 function openCard(id){
@@ -608,6 +609,13 @@ function saveModal(){
 
 function closeModal(){
   document.getElementById('modal-bg').classList.remove('visible');
+}
+
+function deleteFromModal(){
+  if(editingId === null) return;
+  if(!confirm('Delete this activity permanently?')) return;
+  state.activities = state.activities.filter(x => x.id !== editingId);
+  closeModal(); render(); updateMap(); toast('Deleted');
 }
 
 function setModalPri(p){modalPri = p; updatePriButtons();}
