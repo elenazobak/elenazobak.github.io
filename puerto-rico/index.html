@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Puerto Rico 2026</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#F8F7F4;--card:#fff;--border:#E5E7EB;--text:#1a1a1a;--muted:#6b7280;--faint:#9ca3af;
+  --r:12px;--rs:8px;
+  --shadow:0 1px 3px rgba(0,0,0,.08);--shadow-md:0 4px 12px rgba(0,0,0,.1);--shadow-lg:0 8px 24px rgba(0,0,0,.15);
+}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+
+/* Header */
+.header{position:sticky;top:0;z-index:100;background:rgba(248,247,244,.92);backdrop-filter:blur(12px);
+  padding:12px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);gap:10px}
+.header h1{font-size:1.25rem;font-weight:800;letter-spacing:-.02em}
+.header-sub{font-size:.75rem;color:var(--muted)}
+.header-actions{display:flex;gap:6px;flex-shrink:0}
+.hbtn{padding:6px 14px;border:1px solid var(--border);border-radius:8px;background:#fff;cursor:pointer;
+  font-size:.78rem;font-weight:600;font-family:inherit;transition:all .2s;white-space:nowrap}
+.hbtn:hover{border-color:#aaa;transform:translateY(-1px);box-shadow:var(--shadow)}
+.hbtn.active{background:var(--text);color:#fff;border-color:var(--text)}
+.progress{display:flex;gap:4px;margin-top:4px}
+.progress-dot{width:8px;height:8px;border-radius:50%;border:2px solid var(--border);transition:all .3s}
+.progress-dot.filled{border-color:transparent}
+
+/* Map */
+.map-section{max-height:0;overflow:hidden;transition:max-height .4s ease;border-bottom:0 solid var(--border)}
+.map-section.visible{max-height:450px;border-bottom-width:2px}
+#map{height:340px;width:100%}
+.map-bar{display:flex;gap:4px;padding:8px 16px;background:#fff;flex-wrap:wrap;align-items:center}
+.map-bar .mbtn{padding:3px 10px;border:1px solid var(--border);border-radius:20px;background:#fff;
+  font-size:.7rem;cursor:pointer;font-family:inherit;font-weight:500;transition:all .2s}
+.map-bar .mbtn.active{color:#fff;border-color:transparent}
+
+/* Board */
+.board{display:flex;gap:12px;padding:16px;overflow-x:auto;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch}
+.board::-webkit-scrollbar{height:6px}
+.board::-webkit-scrollbar-thumb{background:#ccc;border-radius:3px}
+
+/* Day column */
+.day-col{min-width:270px;max-width:270px;flex-shrink:0;scroll-snap-align:start;display:flex;flex-direction:column}
+.day-hdr{padding:10px 12px;border-radius:var(--r) var(--r) 0 0;background:#fff;border:1px solid var(--border);
+  border-bottom:none;border-top:3px solid;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.day-name{font-weight:700;font-size:.88rem}
+.day-date{font-size:.72rem;color:var(--muted)}
+.day-count{margin-left:auto;font-size:.65rem;color:var(--faint)}
+.day-nav{margin-left:4px;background:none;border:none;cursor:pointer;font-size:.82rem;padding:2px;
+  border-radius:4px;transition:background .2s;opacity:.5}
+.day-nav:hover{background:#F3F4F6;opacity:1}
+.day-cards{flex:1;min-height:100px;background:rgba(255,255,255,.4);border:1px solid var(--border);
+  border-radius:0 0 var(--r) var(--r);padding:8px;display:flex;flex-direction:column;gap:8px}
+.day-cards.drag-over{background:rgba(59,130,246,.05);border-color:rgba(59,130,246,.3)}
+.day-empty{font-size:.72rem;color:var(--faint);text-align:center;padding:30px 10px;pointer-events:none}
+
+/* Card */
+.card{background:var(--card);border-radius:var(--rs);padding:10px 30px 10px 12px;border-left:4px solid;
+  box-shadow:var(--shadow);cursor:grab;transition:transform .15s,box-shadow .15s;position:relative;user-select:none}
+.card:hover{transform:translateY(-2px);box-shadow:var(--shadow-md)}
+.card:active{cursor:grabbing}
+.card-ghost{opacity:.3;transform:rotate(3deg)}
+.card-chosen{box-shadow:var(--shadow-lg);transform:scale(1.03) rotate(1deg)}
+.card-drag{opacity:.9}
+.card-top{display:flex;align-items:flex-start;gap:6px}
+.card-emoji{font-size:.85rem;flex-shrink:0;margin-top:1px}
+.card-title{font-weight:600;font-size:.82rem;line-height:1.3;flex:1}
+.card-loc{font-size:.68rem;color:var(--muted);margin-top:2px;display:flex;align-items:center;gap:3px}
+.card-price{font-size:.68rem;color:var(--muted);margin-top:1px}
+.card-badge{display:inline-block;font-size:.58rem;font-weight:700;padding:1px 6px;border-radius:4px;
+  text-transform:uppercase;margin-top:4px;letter-spacing:.03em}
+.card-badge.must{background:#DCFCE7;color:#16A34A}
+.card-badge.maybe{background:#F3F4F6;color:#9CA3AF}
+.card-x{position:absolute;top:6px;right:6px;width:20px;height:20px;border:none;background:none;
+  cursor:pointer;font-size:13px;color:#ccc;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;transition:all .15s;line-height:1}
+.card-x:hover{color:#EF4444;background:#FEE2E2}
+.card-click{position:absolute;inset:0;cursor:pointer;z-index:1;border-radius:var(--rs)}
+.card-x{z-index:2}
+
+/* Pool */
+.pool-section{border-top:2px solid var(--border);background:#F0EFEC;padding:16px 20px 24px}
+.pool-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px}
+.pool-top h2{font-size:.95rem;font-weight:700}
+.pool-tabs{display:flex;gap:4px;flex-wrap:wrap}
+.ptab{padding:4px 10px;border:1px solid var(--border);border-radius:20px;background:#fff;
+  font-size:.7rem;cursor:pointer;font-family:inherit;font-weight:500;transition:all .2s}
+.ptab.active{background:var(--text);color:#fff;border-color:var(--text)}
+.pool-cards{display:flex;flex-wrap:wrap;gap:8px;min-height:50px;padding:4px 0}
+.pool-cards .card{width:250px;flex-shrink:0}
+.add-card{width:250px;flex-shrink:0;border:2px dashed var(--border);border-radius:var(--rs);padding:16px;
+  display:flex;align-items:center;justify-content:center;gap:6px;cursor:pointer;font-size:.82rem;
+  font-weight:600;color:var(--faint);transition:all .2s;background:none;font-family:inherit}
+.add-card:hover{border-color:#aaa;color:var(--muted);background:rgba(255,255,255,.5)}
+
+/* Modal */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:1000;
+  align-items:center;justify-content:center;padding:20px}
+.modal-bg.visible{display:flex}
+.modal{background:#fff;border-radius:16px;width:100%;max-width:420px;max-height:85vh;overflow-y:auto;box-shadow:var(--shadow-lg)}
+.modal-hdr{display:flex;justify-content:space-between;align-items:center;padding:14px 20px;border-bottom:1px solid var(--border)}
+.modal-hdr h3{font-size:.95rem;font-weight:700}
+.modal-close{background:none;border:none;font-size:1.3rem;cursor:pointer;color:var(--muted);padding:4px;line-height:1}
+.modal-body{padding:16px 20px;display:flex;flex-direction:column;gap:10px}
+.modal-body label{font-size:.68rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:-6px}
+.modal-body input,.modal-body select,.modal-body textarea{padding:8px 12px;border:1px solid var(--border);
+  border-radius:8px;font-size:.85rem;font-family:inherit;outline:none;transition:border .2s}
+.modal-body input:focus,.modal-body select:focus,.modal-body textarea:focus{border-color:#3B82F6}
+.modal-body textarea{min-height:80px;resize:vertical}
+.pri-toggle{display:flex;gap:6px}
+.pri-btn{flex:1;padding:8px;border:2px solid var(--border);border-radius:8px;background:none;
+  font-size:.78rem;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;text-transform:uppercase}
+.pri-btn.sel-must{border-color:#22C55E;background:#F0FDF4;color:#16A34A}
+.pri-btn.sel-maybe{border-color:#9CA3AF;background:#F9FAFB;color:#6B7280}
+.modal-foot{padding:12px 20px;border-top:1px solid var(--border);display:flex;justify-content:space-between;gap:8px}
+.btn-save{padding:8px 24px;background:#3B82F6;color:#fff;border:none;border-radius:8px;
+  font-weight:600;cursor:pointer;font-family:inherit;font-size:.82rem;transition:background .2s}
+.btn-save:hover{background:#2563EB}
+.btn-del{padding:8px 16px;background:none;color:#EF4444;border:1px solid #FCA5A5;border-radius:8px;
+  font-weight:600;cursor:pointer;font-family:inherit;font-size:.78rem;transition:all .2s}
+.btn-del:hover{background:#FEF2F2}
+.modal-maps{display:inline-flex;align-items:center;gap:4px;font-size:.72rem;color:#3B82F6;
+  text-decoration:none;font-weight:500;margin-top:-4px}
+.modal-maps:hover{text-decoration:underline}
+
+/* Toast */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);
+  background:var(--text);color:#fff;padding:10px 20px;border-radius:10px;font-size:.82rem;font-weight:500;
+  transition:transform .3s ease;z-index:2000;pointer-events:none;white-space:nowrap}
+.toast.visible{transform:translateX(-50%) translateY(0)}
+
+/* Footer */
+.footer{text-align:center;padding:16px;font-size:.68rem;color:var(--faint)}
+.footer a{color:var(--muted);text-decoration:none}
+
+/* Responsive */
+@media(max-width:768px){
+  .header{flex-direction:column;text-align:center}
+  .day-col{min-width:250px;max-width:250px}
+  .pool-cards .card,.add-card{width:100%}
+  .board{padding:12px 8px}
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div>
+    <h1>Puerto Rico 2026</h1>
+    <div class="header-sub">Mar 30 – Apr 5 · Family Adventure</div>
+    <div class="progress" id="progress"></div>
+  </div>
+  <div class="header-actions">
+    <button class="hbtn" onclick="toggleMap()" id="map-toggle">Map</button>
+    <button class="hbtn" onclick="openAddModal()">+ Add</button>
+    <button class="hbtn" onclick="resetBoard()">Reset</button>
+  </div>
+</header>
+
+<div class="map-section" id="map-section">
+  <div id="map"></div>
+  <div class="map-bar" id="map-bar"></div>
+</div>
+
+<main class="board" id="board"></main>
+
+<section class="pool-section">
+  <div class="pool-top">
+    <h2>Activity Pool</h2>
+    <div class="pool-tabs" id="pool-tabs"></div>
+  </div>
+  <div class="pool-cards" id="pool"></div>
+</section>
+
+<div class="modal-bg" id="modal-bg" onclick="closeModal()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-hdr">
+      <h3 id="modal-title">Activity</h3>
+      <button class="modal-close" onclick="closeModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <label>Name</label>
+      <input id="m-name" placeholder="Activity name">
+      <label>Category</label>
+      <select id="m-cat"></select>
+      <label>Priority</label>
+      <div class="pri-toggle">
+        <button class="pri-btn" id="pri-must" onclick="setModalPri('must')">Must</button>
+        <button class="pri-btn" id="pri-maybe" onclick="setModalPri('maybe')">Maybe</button>
+      </div>
+      <label>Location</label>
+      <input id="m-loc" placeholder="Location">
+      <label>Price</label>
+      <input id="m-price" placeholder="e.g. $70/person">
+      <label>Notes</label>
+      <textarea id="m-notes" placeholder="Details, tips, links..."></textarea>
+      <label>Website</label>
+      <input id="m-url" placeholder="https://...">
+      <a class="modal-maps" id="m-maps" href="#" target="_blank">Open in Google Maps</a>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-del" id="m-del" onclick="deleteCard()">Delete</button>
+      <button class="btn-save" onclick="saveModal()">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<div class="footer">Each browser saves its own changes &middot; Plan together on one screen</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+// ===== CONFIG =====
+const CATS = {
+  surf:       {label:'Surf',      emoji:'🏄',color:'#3B82F6'},
+  snorkeling: {label:'Snorkeling',emoji:'🤿',color:'#06B6D4'},
+  beach:      {label:'Beach',     emoji:'🏖️',color:'#F59E0B'},
+  hiking:     {label:'Hiking',    emoji:'🥾',color:'#22C55E'},
+  restaurant: {label:'Food',      emoji:'🍽️',color:'#F97316'},
+  hotel:      {label:'Hotel',     emoji:'🏨',color:'#8B5CF6'},
+  travel:     {label:'Travel',    emoji:'✈️',color:'#64748B'},
+  culture:    {label:'Culture',   emoji:'🏛️',color:'#EC4899'},
+  kids:       {label:'Adventure', emoji:'⚡',color:'#A855F7'}
+};
+const DAY_COLORS = ['#EF4444','#F97316','#EAB308','#22C55E','#3B82F6','#8B5CF6','#EC4899'];
+const DAYS = [
+  {n:1,date:'Mar 30',wd:'Mon'},{n:2,date:'Mar 31',wd:'Tue'},{n:3,date:'Apr 1',wd:'Wed'},
+  {n:4,date:'Apr 2',wd:'Thu'},{n:5,date:'Apr 3',wd:'Fri'},{n:6,date:'Apr 4',wd:'Sat'},{n:7,date:'Apr 5',wd:'Sun'}
+];
+
+const DEFAULTS = [
+  // Pre-assigned
+  {id:1,title:'Arrive in San Juan',cat:'travel',pri:'must',day:1,
+    notes:'Flight lands 11:50 PM (Mar 29 night). Pick up rental car at airport. Late arrival — just get to hotel.',
+    loc:'SJU Airport',lat:18.4394,lng:-66.0018},
+  {id:2,title:'Flight home',cat:'travel',pri:'must',day:7,
+    notes:'UA 2219 departs 1:00 AM Apr 6 (overnight). Arrive EWR 5:10 AM. Need to be at airport by 10-11 PM on Apr 5.',
+    loc:'SJU Airport',lat:18.4394,lng:-66.0018},
+
+  // SURF
+  {id:10,title:'Puntas Surf School',cat:'surf',pri:'maybe',day:null,
+    notes:'BEST for sensitive kids. Semi-private: 2 kids share 1 instructor, no strangers. Max 2-3 students per instructor (best ratio). Reviews praise patience with nervous kids ages 5-7. Call ahead and say kids are cautious — they\'ll match calmest instructor. Book 1.5hr session (kids don\'t burn out).',
+    loc:'Barrio Puntas, Rincon',lat:18.3560,lng:-67.2680,url:'https://puntassurfschool.com/',price:'$70/person · 1.5hrs'},
+  {id:11,title:'Surfing Puerto Rico',cat:'surf',pri:'maybe',day:null,
+    notes:'At La Pared Beach — gentlest beginner beach on the island. Sandy bottom, lifeguards on duty. Instructor Brian (former national champion) praised as fantastic with kids. Includes board + snacks. Only 45 min from San Juan. Safety briefing covers underwater conditions — helps anxious kids feel informed.',
+    loc:'La Pared Beach, Luquillo',lat:18.3800,lng:-65.7180,url:'https://www.surfingpuertorico.com/',price:'$70/person · 2hrs'},
+  {id:12,title:'Spectrum Surf School',cat:'surf',pri:'maybe',day:null,
+    notes:'BEST for highly sensitive/anxious kids. Runs surf therapy for children with autism — instructors trained in patience, sensory awareness, adaptive teaching. Even if your kids aren\'t on the spectrum, the mindset is perfect. 20+ years experience. Red Cross certified. Bilingual.',
+    loc:'San Juan area',lat:18.4583,lng:-66.0717,url:'https://spectrumsurfschool.com/',price:'Contact for rates'},
+  {id:13,title:'Rincon Surf School',cat:'surf',pri:'maybe',day:null,
+    notes:'Longest-running in Rincon. 30 min dry-land instruction before water — great for anxious kids to prepare mentally. Parent review: "got my scared 10-year-old flying down waves with biggest smile." Another: "life-changing for our 8 and 6-year-old."',
+    loc:'Sandy Beach, Rincon',lat:18.3460,lng:-67.2610,url:'https://www.rinconsurfschool.com/',price:'$120/person · 3hrs'},
+
+  // BEACH
+  {id:20,title:'Luquillo Beach',cat:'beach',pri:'maybe',day:null,
+    notes:'Calm, family-friendly. Palm-lined, gentle waves, food kiosks right next door. One of the best kid beaches in PR. 45 min from San Juan.',
+    loc:'Luquillo',lat:18.3724,lng:-65.7168},
+  {id:21,title:'Condado Beach',cat:'beach',pri:'maybe',day:null,
+    notes:'Urban beach in San Juan hotel zone. Walking distance from most hotels. Can be wavy — fun for playing in waves but watch kids. Restaurants and shops nearby.',
+    loc:'Condado, San Juan',lat:18.4583,lng:-66.0717},
+  {id:22,title:'Flamenco Beach (Culebra)',cat:'beach',pri:'maybe',day:null,
+    notes:'Rated one of the most beautiful beaches in the WORLD. Requires ferry from Fajardo (~1hr) or small plane (~$150 RT). Plan as a FULL day trip. Crystal clear turquoise water, white sand. Book ferry at portalcubero.com well in advance — sells out!',
+    loc:'Culebra Island',lat:18.3253,lng:-65.3152},
+  {id:23,title:'Crash Boat Beach',cat:'beach',pri:'maybe',day:null,
+    notes:'Beautiful beach in Aguadilla. Great snorkeling along the pier sides. Calm water near the pier for kids. Local food vendors. Colorful boats.',
+    loc:'Aguadilla',lat:18.4583,lng:-67.1639},
+  {id:24,title:'Isla Verde Beach',cat:'beach',pri:'maybe',day:null,
+    notes:'Closest nice beach to airport and hotel zone. Good for bodyboarding. Hotels and restaurants walkable. Easy first-day or last-day beach option.',
+    loc:'Isla Verde, San Juan',lat:18.4481,lng:-66.0041},
+
+  // SNORKELING
+  {id:30,title:'Escambron Beach Snorkeling',cat:'snorkeling',pri:'maybe',day:null,
+    notes:'Protected marine area right in San Juan. Natural rock barriers create a calm pool — PERFECT for kids. Shallow water with fish and sometimes sea turtles. Lifeguards on duty. Bring or rent snorkel gear.',
+    loc:'Escambron, San Juan',lat:18.4647,lng:-66.0891},
+  {id:31,title:'Steps Beach Snorkeling',cat:'snorkeling',pri:'maybe',day:null,
+    notes:'Top snorkeling near Rincon. Coral reef close to shore. Tropical fish, sea turtles. Calm entry via steps (hence the name). Bring own gear or rent in Rincon.',
+    loc:'Steps Beach, Rincon',lat:18.3625,lng:-67.2675},
+
+  // HIKING
+  {id:40,title:'El Yunque — La Mina Trail',cat:'hiking',pri:'maybe',day:null,
+    notes:'Most popular trail in the only tropical rainforest in the US. Leads to La Mina waterfall — you can swim! ~1.5 miles round trip, moderate. Kids can do it. Gets crowded — go early morning. RESERVATION REQUIRED at recreation.gov.',
+    loc:'El Yunque National Forest',lat:18.3151,lng:-65.7866,url:'https://www.recreation.gov/ticket/facility/300014',price:'$2 reservation'},
+  {id:41,title:'El Yunque — Juan Diego Creek',cat:'hiking',pri:'maybe',day:null,
+    notes:'Less crowded than La Mina. Natural water slides and pools — kids LOVE this. Easy-moderate trail. Bring water shoes. Great alternative if La Mina is sold out.',
+    loc:'El Yunque National Forest',lat:18.2980,lng:-65.7900},
+
+  // CULTURE
+  {id:45,title:'Old San Juan Walk',cat:'culture',pri:'maybe',day:null,
+    notes:'Colorful colonial streets, shops, cafes. Free to walk around. Kids like the colored buildings and cobblestone streets. Get ice cream at Senor Paleta. Very Instagram-worthy.',
+    loc:'Old San Juan',lat:18.4663,lng:-66.1178},
+  {id:46,title:'El Morro Fort',cat:'culture',pri:'maybe',day:null,
+    notes:'Iconic 16th-century fortress. Kids love exploring tunnels, towers, and the huge lawn (bring a kite!). Great views. Combine with Old San Juan walk.',
+    loc:'Old San Juan',lat:18.4707,lng:-66.1244,price:'$10/adult, free under 15'},
+  {id:47,title:'San Cristobal Fort',cat:'culture',pri:'maybe',day:null,
+    notes:'Largest fort built in the Americas. Secret tunnels, watchtowers. Less crowded than El Morro. Same ticket covers both forts on same day.',
+    loc:'Old San Juan',lat:18.4673,lng:-66.1151,price:'Same ticket as El Morro'},
+
+  // ADVENTURE / KIDS
+  {id:55,title:'Bio Bay Kayak Tour',cat:'kids',pri:'maybe',day:null,
+    notes:'Bioluminescent bay — the water GLOWS when you touch it. Truly magical, especially for kids. Book in Fajardo (Laguna Grande). Go on a moonless night for best glow. BOOK EARLY — sells out weeks ahead!',
+    loc:'Fajardo',lat:18.3358,lng:-65.6527,price:'~$60-70/person'},
+  {id:56,title:'Toro Verde Zipline',cat:'kids',pri:'maybe',day:null,
+    notes:'Adventure park in the mountains. "The Beast" is one of the longest ziplines in the world (2.5km!). Also has shorter kid-friendly lines. Check min age/weight on website.',
+    loc:'Orocovis',lat:18.1700,lng:-66.3600,url:'https://toroverdepr.com/',price:'~$90-160/person'},
+  {id:57,title:'Coqui Frog Night Walk',cat:'kids',pri:'maybe',day:null,
+    notes:'Hear the famous Puerto Rican coqui frogs at dusk/night. Their call is iconic. Free if you do it on your own near any forested area. Some guides offer El Yunque evening walks.',
+    loc:'El Yunque area',lat:18.3151,lng:-65.7866,price:'Free'},
+
+  // RESTAURANTS
+  {id:60,title:'Luquillo Kiosks',cat:'restaurant',pri:'maybe',day:null,
+    notes:'60+ food stalls along the beach. Alcapurrias, empanadillas, fresh seafood. Very kid-friendly, casual outdoor eating. Local favorite. Try multiple stalls!',
+    loc:'Luquillo',lat:18.3745,lng:-65.7198},
+  {id:61,title:'La Placita',cat:'restaurant',pri:'maybe',day:null,
+    notes:'Marketplace by day, lively scene by night. Great local restaurants around the square. Kids fine for early dinner. Try mofongo!',
+    loc:'Santurce, San Juan',lat:18.4450,lng:-66.0640},
+  {id:62,title:'Pinones Food Trail',cat:'restaurant',pri:'maybe',day:null,
+    notes:'Roadside food stalls east of San Juan. Famous for bacalaitos, alcapurrias, piononos. Very local, authentic, cheap. Right on the coast — beautiful drive.',
+    loc:'Pinones, Loiza',lat:18.4396,lng:-65.9576},
+  {id:63,title:'Kasalta Bakery',cat:'restaurant',pri:'maybe',day:null,
+    notes:'Famous bakery in Ocean Park. Obama ate here! Great breakfast/brunch. Cuban sandwich, mallorcas, pastries. Kid-friendly.',
+    loc:'Ocean Park, San Juan',lat:18.4537,lng:-66.0558},
+
+  // HOTEL
+  {id:70,title:'Book hotel in San Juan',cat:'hotel',pri:'must',day:null,
+    notes:'Look at Condado or Isla Verde area. Family-friendly with pool. Close to beach and restaurants.',
+    loc:'San Juan',lat:18.4583,lng:-66.0717},
+  {id:71,title:'Book hotel in Rincon',cat:'hotel',pri:'maybe',day:null,
+    notes:'Only needed if doing surf lessons in Rincon (west coast). Otherwise skip — can base in San Juan. If going, 2-3 nights is enough.',
+    loc:'Rincon',lat:18.3406,lng:-67.2500},
+
+  // TRAVEL
+  {id:80,title:'Rent a car',cat:'travel',pri:'must',day:null,
+    notes:'Essential for exploring beyond San Juan. Pick up at SJU airport on arrival. Book in advance for best rates.',
+    loc:'SJU Airport',lat:18.4394,lng:-66.0018},
+  {id:81,title:'Ferry to Culebra',cat:'travel',pri:'maybe',day:null,
+    notes:'If doing Flamenco Beach. Ferry from Fajardo ~1hr each way. Book at portalcubero.com WELL in advance — sells out! Alternative: small plane from SJU (~30 min, ~$150 RT).',
+    loc:'Fajardo Terminal',lat:18.3340,lng:-65.6310}
+];
+
+// ===== STATE =====
+let state = {activities:[], poolFilter:'all', mapFilter:'all'};
+let map = null, markers = [], editingId = null, modalPri = 'maybe';
+let nextId = 100;
+
+// ===== INIT =====
+function init(){
+  loadState();
+  buildBoard();
+  buildPoolTabs();
+  buildMapBar();
+  render();
+  initSortable();
+  initMap();
+}
+
+function loadState(){
+  const s = localStorage.getItem('pr-trip-2026');
+  if(s){
+    const parsed = JSON.parse(s);
+    state.activities = parsed.activities || [];
+    state.poolFilter = parsed.poolFilter || 'all';
+    state.mapFilter = parsed.mapFilter || 'all';
+    nextId = Math.max(100, ...state.activities.map(a=>a.id)) + 1;
+  } else {
+    state.activities = JSON.parse(JSON.stringify(DEFAULTS));
+  }
+}
+
+function saveState(){
+  localStorage.setItem('pr-trip-2026', JSON.stringify(state));
+}
+
+function resetBoard(){
+  if(!confirm('Reset everything to defaults? Your changes will be lost.')) return;
+  localStorage.removeItem('pr-trip-2026');
+  state.activities = JSON.parse(JSON.stringify(DEFAULTS));
+  state.poolFilter = 'all';
+  state.mapFilter = 'all';
+  nextId = 100;
+  render();
+  updateMap();
+  toast('Board reset');
+}
+
+// ===== BUILD STATIC ELEMENTS =====
+function buildBoard(){
+  const board = document.getElementById('board');
+  board.innerHTML = DAYS.map(d => `
+    <div class="day-col">
+      <div class="day-hdr" style="border-top-color:${DAY_COLORS[d.n-1]}">
+        <span class="day-name">Day ${d.n}</span>
+        <span class="day-date">${d.wd} ${d.date}</span>
+        <span class="day-count" id="count-${d.n}"></span>
+        <button class="day-nav" onclick="navigateDay(${d.n})" title="Open route in Google Maps">🗺️</button>
+      </div>
+      <div class="day-cards" id="day-${d.n}"></div>
+    </div>
+  `).join('');
+}
+
+function buildPoolTabs(){
+  const tabs = document.getElementById('pool-tabs');
+  let html = `<button class="ptab active" onclick="filterPool('all')">All</button>`;
+  for(const[k,v] of Object.entries(CATS)){
+    html += `<button class="ptab" onclick="filterPool('${k}')">${v.emoji} ${v.label}</button>`;
+  }
+  tabs.innerHTML = html;
+}
+
+function buildMapBar(){
+  const bar = document.getElementById('map-bar');
+  let html = `<button class="mbtn active" onclick="filterMap('all')" style="background:#374151;color:#fff">All</button>`;
+  DAYS.forEach(d => {
+    html += `<button class="mbtn" onclick="filterMap(${d.n})"
+      style="border-color:${DAY_COLORS[d.n-1]}">Day ${d.n}</button>`;
+  });
+  html += `<button class="mbtn" onclick="filterMap('pool')" style="border-color:#888">Pool</button>`;
+  bar.innerHTML = html;
+}
+
+// ===== RENDER =====
+function render(){
+  // Days
+  DAYS.forEach(d => {
+    const container = document.getElementById(`day-${d.n}`);
+    const acts = state.activities.filter(a => a.day === d.n);
+    if(acts.length === 0){
+      container.innerHTML = '<div class="day-empty">Drag activities here</div>';
+    } else {
+      container.innerHTML = acts.map(a => cardHTML(a, false)).join('');
+    }
+    document.getElementById(`count-${d.n}`).textContent = acts.length ? acts.length + ' activities' : '';
+  });
+
+  // Pool
+  const pool = document.getElementById('pool');
+  const f = state.poolFilter;
+  const poolActs = state.activities.filter(a => a.day === null && (f === 'all' || a.cat === f));
+  pool.innerHTML = poolActs.map(a => cardHTML(a, true)).join('') +
+    '<button class="add-card" onclick="openAddModal()">+ Add Activity</button>';
+
+  // Progress dots
+  const prog = document.getElementById('progress');
+  prog.innerHTML = DAYS.map(d => {
+    const has = state.activities.some(a => a.day === d.n && a.pri === 'must');
+    return `<div class="progress-dot ${has?'filled':''}" style="${has?'background:'+DAY_COLORS[d.n-1]:''}"></div>`;
+  }).join('');
+
+  // Re-init sortable
+  initSortable();
+  saveState();
+}
+
+function cardHTML(a, inPool){
+  const c = CATS[a.cat] || {emoji:'📌',color:'#888'};
+  return `<div class="card" data-id="${a.id}" style="border-left-color:${c.color}">
+    <div class="card-click" onclick="openCard(${a.id})"></div>
+    <button class="card-x" onclick="${inPool ? `deleteCard(${a.id})` : `removeCard(${a.id})`}">&times;</button>
+    <div class="card-top">
+      <span class="card-emoji">${c.emoji}</span>
+      <span class="card-title">${esc(a.title)}</span>
+    </div>
+    ${a.loc ? `<div class="card-loc">📍 ${esc(a.loc)}</div>` : ''}
+    ${a.price ? `<div class="card-price">💰 ${esc(a.price)}</div>` : ''}
+    <span class="card-badge ${a.pri}">${a.pri}</span>
+  </div>`;
+}
+
+function esc(s){return s ? String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;') : '';}
+
+// ===== DRAG & DROP =====
+let sortables = [];
+function initSortable(){
+  sortables.forEach(s => s.destroy());
+  sortables = [];
+  const opts = {
+    group:'trip', animation:180, ghostClass:'card-ghost',
+    chosenClass:'card-chosen', dragClass:'card-drag',
+    onEnd: syncFromDOM, filter:'.day-empty,.add-card',
+    onMove(evt){return !evt.related.classList.contains('add-card');}
+  };
+  DAYS.forEach(d => {
+    const el = document.getElementById(`day-${d.n}`);
+    if(el) sortables.push(Sortable.create(el, {...opts, emptyInsertThreshold:80}));
+  });
+  const pool = document.getElementById('pool');
+  if(pool) sortables.push(Sortable.create(pool, {...opts, emptyInsertThreshold:40}));
+}
+
+function syncFromDOM(){
+  DAYS.forEach(d => {
+    const el = document.getElementById(`day-${d.n}`);
+    [...el.querySelectorAll('.card')].forEach(card => {
+      const a = state.activities.find(x => x.id === +card.dataset.id);
+      if(a) a.day = d.n;
+    });
+  });
+  const pool = document.getElementById('pool');
+  [...pool.querySelectorAll('.card')].forEach(card => {
+    const a = state.activities.find(x => x.id === +card.dataset.id);
+    if(a) a.day = null;
+  });
+  // Update counts & progress without full re-render
+  DAYS.forEach(d => {
+    const acts = state.activities.filter(a => a.day === d.n);
+    document.getElementById(`count-${d.n}`).textContent = acts.length ? acts.length + ' activities' : '';
+  });
+  const prog = document.getElementById('progress');
+  prog.innerHTML = DAYS.map(d => {
+    const has = state.activities.some(a => a.day === d.n && a.pri === 'must');
+    return `<div class="progress-dot ${has?'filled':''}" style="${has?'background:'+DAY_COLORS[d.n-1]:''}"></div>`;
+  }).join('');
+  saveState();
+  updateMap();
+}
+
+// ===== CARD ACTIONS =====
+function removeCard(id){
+  const a = state.activities.find(x => x.id === id);
+  if(a){a.day = null; state.poolFilter = 'all'; render(); updateMap(); toast('Moved to pool');}
+}
+
+function deleteCard(id){
+  if(!confirm('Delete this activity permanently?')) return;
+  state.activities = state.activities.filter(x => x.id !== id);
+  render(); updateMap(); toast('Deleted');
+}
+
+function openCard(id){
+  editingId = id;
+  const a = state.activities.find(x => x.id === id);
+  if(!a) return;
+  document.getElementById('modal-title').textContent = 'Edit Activity';
+  document.getElementById('m-name').value = a.title || '';
+  document.getElementById('m-cat').value = a.cat || 'culture';
+  document.getElementById('m-loc').value = a.loc || '';
+  document.getElementById('m-price').value = a.price || '';
+  document.getElementById('m-notes').value = a.notes || '';
+  document.getElementById('m-url').value = a.url || '';
+  modalPri = a.pri || 'maybe';
+  updatePriButtons();
+  const mapsLink = document.getElementById('m-maps');
+  if(a.lat && a.lng){
+    mapsLink.href = `https://www.google.com/maps?q=${a.lat},${a.lng}`;
+    mapsLink.style.display = '';
+  } else {
+    mapsLink.style.display = 'none';
+  }
+  document.getElementById('m-del').style.display = a.day === null ? '' : 'none';
+  document.getElementById('modal-bg').classList.add('visible');
+}
+
+function openAddModal(){
+  editingId = null;
+  document.getElementById('modal-title').textContent = 'New Activity';
+  document.getElementById('m-name').value = '';
+  document.getElementById('m-cat').value = 'culture';
+  document.getElementById('m-loc').value = '';
+  document.getElementById('m-price').value = '';
+  document.getElementById('m-notes').value = '';
+  document.getElementById('m-url').value = '';
+  document.getElementById('m-maps').style.display = 'none';
+  document.getElementById('m-del').style.display = 'none';
+  modalPri = 'maybe';
+  updatePriButtons();
+  document.getElementById('modal-bg').classList.add('visible');
+}
+
+function saveModal(){
+  const title = document.getElementById('m-name').value.trim();
+  if(!title){toast('Name is required'); return;}
+  if(editingId !== null){
+    const a = state.activities.find(x => x.id === editingId);
+    if(a){
+      a.title = title;
+      a.cat = document.getElementById('m-cat').value;
+      a.pri = modalPri;
+      a.loc = document.getElementById('m-loc').value.trim();
+      a.price = document.getElementById('m-price').value.trim();
+      a.notes = document.getElementById('m-notes').value.trim();
+      a.url = document.getElementById('m-url').value.trim();
+    }
+  } else {
+    state.activities.push({
+      id: nextId++,
+      title,
+      cat: document.getElementById('m-cat').value,
+      pri: modalPri,
+      day: null,
+      loc: document.getElementById('m-loc').value.trim(),
+      price: document.getElementById('m-price').value.trim(),
+      notes: document.getElementById('m-notes').value.trim(),
+      url: document.getElementById('m-url').value.trim(),
+      lat: null, lng: null
+    });
+  }
+  closeModal();
+  render();
+  updateMap();
+  toast(editingId !== null ? 'Saved' : 'Added to pool');
+}
+
+function closeModal(){
+  document.getElementById('modal-bg').classList.remove('visible');
+}
+
+function setModalPri(p){modalPri = p; updatePriButtons();}
+function updatePriButtons(){
+  document.getElementById('pri-must').className = 'pri-btn' + (modalPri==='must'?' sel-must':'');
+  document.getElementById('pri-maybe').className = 'pri-btn' + (modalPri==='maybe'?' sel-maybe':'');
+}
+
+// ===== POOL FILTER =====
+function filterPool(cat){
+  state.poolFilter = cat;
+  document.querySelectorAll('.ptab').forEach(b => b.classList.toggle('active',
+    (cat==='all' && b.textContent.trim()==='All') || b.textContent.includes(CATS[cat]?.label||'---')));
+  render();
+}
+
+// ===== MAP =====
+function initMap(){
+  map = L.map('map').setView([18.25, -66.3], 9);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution:'© OpenStreetMap', maxZoom:18
+  }).addTo(map);
+  updateMap();
+}
+
+function updateMap(){
+  if(!map) return;
+  markers.forEach(m => map.removeLayer(m));
+  markers = [];
+  const filter = state.mapFilter;
+  state.activities.forEach(a => {
+    if(!a.lat || !a.lng) return;
+    if(filter !== 'all'){
+      if(filter === 'pool' && a.day !== null) return;
+      if(typeof filter === 'number' && a.day !== filter) return;
+    }
+    const color = a.day ? DAY_COLORS[a.day-1] : '#888';
+    const cat = CATS[a.cat] || {emoji:'📌'};
+    const icon = L.divIcon({
+      className:'',
+      html:`<div style="background:${color};width:28px;height:28px;border-radius:50%;border:3px solid #fff;
+        box-shadow:0 2px 6px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;
+        font-size:13px;cursor:pointer">${cat.emoji}</div>`,
+      iconSize:[28,28], iconAnchor:[14,14]
+    });
+    const m = L.marker([a.lat, a.lng], {icon}).addTo(map);
+    m.bindPopup(`<b>${esc(a.title)}</b><br><span style="color:#666;font-size:12px">${a.day ? 'Day '+a.day+' · '+DAYS[a.day-1].wd+' '+DAYS[a.day-1].date : 'In pool'}</span>
+      ${a.price ? '<br><span style="font-size:12px">'+esc(a.price)+'</span>':''}
+      ${a.notes ? '<br><span style="font-size:11px;color:#888">'+esc(a.notes).substring(0,120)+'...</span>':''}`);
+    markers.push(m);
+  });
+}
+
+function toggleMap(){
+  const sec = document.getElementById('map-section');
+  const btn = document.getElementById('map-toggle');
+  const show = !sec.classList.contains('visible');
+  sec.classList.toggle('visible', show);
+  btn.classList.toggle('active', show);
+  if(show) setTimeout(() => map.invalidateSize(), 400);
+}
+
+function filterMap(f){
+  state.mapFilter = f;
+  document.querySelectorAll('.map-bar .mbtn').forEach((b,i) => {
+    if(f==='all') b.classList.toggle('active', i===0);
+    else if(f==='pool') b.classList.toggle('active', b.textContent.trim()==='Pool');
+    else b.classList.toggle('active', b.textContent.trim() === 'Day '+f);
+  });
+  document.querySelectorAll('.map-bar .mbtn.active').forEach(b => {
+    if(f==='all'){b.style.background='#374151';b.style.color='#fff';}
+    else if(f==='pool'){b.style.background='#888';b.style.color='#fff';}
+    else if(typeof f==='number'){b.style.background=DAY_COLORS[f-1];b.style.color='#fff';}
+  });
+  document.querySelectorAll('.map-bar .mbtn:not(.active)').forEach(b => {
+    b.style.background='#fff';b.style.color='';
+  });
+  updateMap();
+}
+
+function navigateDay(day){
+  const acts = state.activities.filter(a => a.day === day && a.lat && a.lng);
+  if(acts.length === 0){toast('No locations for this day yet'); return;}
+  const points = acts.map(a => `${a.lat},${a.lng}`).join('/');
+  window.open(`https://www.google.com/maps/dir/${points}`, '_blank');
+}
+
+// ===== TOAST =====
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('visible');
+  setTimeout(() => t.classList.remove('visible'), 2000);
+}
+
+// ===== POPULATE CATEGORY SELECT =====
+(function(){
+  const sel = document.getElementById('m-cat');
+  for(const[k,v] of Object.entries(CATS)){
+    sel.innerHTML += `<option value="${k}">${v.emoji} ${v.label}</option>`;
+  }
+})();
+
+// ===== START =====
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
