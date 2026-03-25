@@ -316,6 +316,16 @@ body {
   box-shadow: 0 14px 40px rgba(232, 184, 73, 0.18), 0 2px 8px rgba(0,0,0,0.06);
 }
 
+.card-mint {
+  background: linear-gradient(145deg, #E4F9F3 0%, #F0FDF9 50%, #FDF6EE 100%);
+  box-shadow: 0 4px 24px rgba(114, 219, 197, 0.12), 0 1px 4px rgba(0,0,0,0.04);
+}
+.card-mint::before { background: var(--mint); }
+.card-mint:hover {
+  box-shadow: 0 14px 40px rgba(114, 219, 197, 0.2), 0 2px 8px rgba(0,0,0,0.06);
+}
+.card-mint .app-card-link { color: #1A8A6E; }
+
 .app-card-name {
   font-family: 'Outfit', sans-serif;
   font-weight: 800;
@@ -735,7 +745,7 @@ body {
   <div class="hero-deco deco-4 anim-bg"></div>
   <div class="container hero-inner">
     <h1 class="hero-name anim-1"><span class="first">Elena</span> <span class="last">Zobak</span></h1>
-    <p class="hero-tagline anim-2">I build stuff.</p>
+    <p class="hero-tagline anim-2">Building.</p>
     <span class="badge anim-3">Builder</span>
   </div>
 </section>
@@ -753,8 +763,22 @@ body {
     <h2 class="section-header anim-4">Shipped</h2>
     <div class="apps-grid">
 
+      <!-- TripDeck -->
+      <div class="app-card card-mint anim-card-1">
+        <div class="app-card-name">TripDeck</div>
+        <p class="app-card-desc">AI trip planner. Build your itinerary in minutes.</p>
+        <div class="app-card-tags">
+          <span class="tag">Web App</span>
+          <span class="tag">Firebase</span>
+          <span class="tag">Claude AI</span>
+        </div>
+        <a href="https://tripdeck.app/" target="_blank" rel="noopener" class="app-card-link">
+          tripdeck.app <span class="arrow">&rarr;</span>
+        </a>
+      </div>
+
       <!-- Hiola -->
-      <div class="app-card card-teal anim-card-1">
+      <div class="app-card card-teal anim-card-2">
         <div class="app-card-name">Hiola</div>
         <p class="app-card-desc">Chat in any language. Real-time AI translation.</p>
         <div class="app-card-tags">
@@ -769,7 +793,7 @@ body {
       </div>
 
       <!-- Yalla Ivrit -->
-      <div class="app-card card-orange anim-card-2">
+      <div class="app-card card-orange anim-card-3">
         <div class="app-card-name">Yalla Ivrit</div>
         <p class="app-card-desc">Hebrew learning for immigrant kids.</p>
         <div class="app-card-tags">
@@ -783,7 +807,7 @@ body {
       </div>
 
       <!-- MoodFrame -->
-      <div class="app-card card-coral anim-card-3">
+      <div class="app-card card-coral anim-card-4">
         <div class="app-card-name">
           MoodFrame
           <span class="coming-soon-badge">Coming Soon</span>
@@ -822,7 +846,7 @@ body {
 <!-- ========== BACKGROUND ========== -->
 <section class="background-section">
   <div class="container">
-    <p class="bg-text">Background in animation and AI.</p>
+    <p class="bg-text">Background in video and animation.</p>
     <a href="https://www.youtube.com/watch?v=uqxzi_ghjgc" target="_blank" rel="noopener" class="video-card">
       <div class="video-thumb">
         <img src="https://img.youtube.com/vi/uqxzi_ghjgc/mqdefault.jpg" alt="The Right Way — 3D animated short film">
