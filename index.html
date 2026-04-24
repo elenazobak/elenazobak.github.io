@@ -141,7 +141,17 @@ body {
   font-size: clamp(1.6rem, 3.5vw, 2.5rem);
   color: var(--dark);
   line-height: 1.2;
+  margin-bottom: 6px;
+}
+
+.hero-role {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+  font-size: clamp(0.9rem, 1.6vw, 1.05rem);
+  color: var(--deep-teal);
+  letter-spacing: 0.02em;
   margin-bottom: 14px;
+  opacity: 0.9;
 }
 
 .badge {
@@ -573,6 +583,50 @@ body {
 }
 
 /* ============================================
+   RESUME
+   ============================================ */
+.resume-section {
+  padding: 0 0 20px;
+}
+
+.resume-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.resume-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: 0.88rem;
+  color: var(--deep-teal);
+  text-decoration: none;
+  padding: 9px 20px;
+  border: 1.5px solid rgba(13, 94, 94, 0.22);
+  border-radius: var(--pill-radius);
+  background: rgba(255, 255, 255, 0.55);
+  transition: transform 0.25s ease, background 0.25s ease, color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.resume-link:hover {
+  transform: translateY(-2px);
+  background: var(--deep-teal);
+  color: #fff;
+  border-color: var(--deep-teal);
+  box-shadow: 0 8px 24px rgba(13, 94, 94, 0.22);
+}
+
+.resume-link svg {
+  width: 14px;
+  height: 14px;
+  fill: currentColor;
+  flex-shrink: 0;
+}
+
+/* ============================================
    FOOTER / CONNECT
    ============================================ */
 .connect-section {
@@ -746,6 +800,7 @@ body {
   <div class="container hero-inner">
     <h1 class="hero-name anim-1"><span class="first">Elena</span> <span class="last">Zobak</span></h1>
     <p class="hero-tagline anim-2">Building.</p>
+    <p class="hero-role anim-3">Customer Success Engineer | SaaS Platforms | iOS Apps</p>
   </div>
 </section>
 
@@ -883,6 +938,34 @@ body {
       <span>PicassoTiles</span>
       <span class="client-sep"></span>
       <span>Net Zero Co.</span>
+    </div>
+  </div>
+</section>
+
+<!-- ========== DOT DIVIDER ========== -->
+<div class="container">
+  <div class="dot-divider">
+    <span></span><span></span><span></span><span></span><span></span>
+  </div>
+</div>
+
+<!-- ========== RESUME ========== -->
+<section class="resume-section">
+  <div class="container">
+    <h2 class="section-header">Resume</h2>
+    <div class="resume-links">
+      <a href="Elena_Zobak_Technical_CSM.pdf" target="_blank" rel="noopener" class="resume-link">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+        Customer Success Engineer
+      </a>
+      <a href="Elena_Zobak_iOS_Developer.pdf" target="_blank" rel="noopener" class="resume-link">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+        iOS Developer
+      </a>
+      <a href="Elena_Zobak_Operations.pdf" target="_blank" rel="noopener" class="resume-link">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+        Operations
+      </a>
     </div>
   </div>
 </section>
