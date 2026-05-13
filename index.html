@@ -154,6 +154,15 @@ body {
   opacity: 0.9;
 }
 
+.hero-summary {
+  font-family: 'DM Sans', sans-serif;
+  font-size: clamp(0.95rem, 1.4vw, 1.05rem);
+  color: #444;
+  line-height: 1.55;
+  max-width: 620px;
+  margin-bottom: 6px;
+}
+
 .badge {
   display: inline-block;
   background: var(--teal);
@@ -413,6 +422,60 @@ body {
 
 .app-card-link:hover .arrow {
   transform: translateX(3px);
+}
+
+/* ============================================
+   SKILLS SECTION
+   ============================================ */
+.skills-section {
+  padding: 0 0 20px;
+}
+
+.skills-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+.skill-group {
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(12, 186, 186, 0.15);
+  border-radius: 16px;
+  padding: 18px 20px;
+}
+
+.skill-label {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 800;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--deep-teal);
+  margin-bottom: 10px;
+}
+
+.skill-list {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.92rem;
+  color: #444;
+  line-height: 1.6;
+}
+
+.skill-list .sep {
+  display: inline-block;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--mint);
+  margin: 0 8px;
+  vertical-align: middle;
+}
+
+@media (max-width: 700px) {
+  .skills-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
 }
 
 /* ============================================
@@ -799,8 +862,9 @@ body {
   <div class="hero-deco deco-4 anim-bg"></div>
   <div class="container hero-inner">
     <h1 class="hero-name anim-1"><span class="first">Elena</span> <span class="last">Zobak</span></h1>
-    <p class="hero-tagline anim-2">Building Lyki.</p>
-    <p class="hero-role anim-3">Product Builder | iOS Apps</p>
+    <p class="hero-tagline anim-2">Technical Customer Success.</p>
+    <p class="hero-role anim-3">APIs · SaaS · Product Systems</p>
+    <p class="hero-summary anim-3">I help SaaS users get unstuck — bugs reproduced, integrations debugged, vendors driven to resolution. I also ship iOS apps.</p>
   </div>
 </section>
 
@@ -897,6 +961,34 @@ body {
   </div>
 </div>
 
+<!-- ========== SKILLS ========== -->
+<section class="skills-section">
+  <div class="container">
+    <h2 class="section-header">Skills</h2>
+    <div class="skills-grid">
+      <div class="skill-group">
+        <div class="skill-label">Technical</div>
+        <div class="skill-list">
+          APIs<span class="sep"></span>REST<span class="sep"></span>Postman<span class="sep"></span>Chrome DevTools<span class="sep"></span>Firebase<span class="sep"></span>Swift / SwiftUI<span class="sep"></span>SQL<span class="sep"></span>Python
+        </div>
+      </div>
+      <div class="skill-group">
+        <div class="skill-label">Customer Success / Ops</div>
+        <div class="skill-list">
+          User onboarding<span class="sep"></span>Troubleshooting<span class="sep"></span>Root cause analysis<span class="sep"></span>Documentation<span class="sep"></span>SaaS configuration<span class="sep"></span>Jira<span class="sep"></span>Zendesk
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== DOT DIVIDER ========== -->
+<div class="container">
+  <div class="dot-divider">
+    <span></span><span></span><span></span><span></span><span></span>
+  </div>
+</div>
+
 <!-- ========== BACKGROUND ========== -->
 <section class="background-section">
   <div class="container">
@@ -924,6 +1016,26 @@ body {
       <span>PicassoTiles</span>
       <span class="client-sep"></span>
       <span>Net Zero Co.</span>
+    </div>
+  </div>
+</section>
+
+<!-- ========== DOT DIVIDER ========== -->
+<div class="container">
+  <div class="dot-divider">
+    <span></span><span></span><span></span><span></span><span></span>
+  </div>
+</div>
+
+<!-- ========== RESUME ========== -->
+<section class="resume-section">
+  <div class="container">
+    <h2 class="section-header">Resume</h2>
+    <div class="resume-links">
+      <a href="Elena_Zobak_CS.pdf" target="_blank" rel="noopener" class="resume-link">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+        Technical Customer Success — PDF
+      </a>
     </div>
   </div>
 </section>
